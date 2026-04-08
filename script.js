@@ -93,12 +93,42 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Contact form submission
-    const form = document.querySelector('.contact-form form');
+    const form = document.getElementById('contact-form');
+    const formStatus = document.getElementById('form-status');
+
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            alert('Thank you for your message! I will get back to you soon.');
-            this.reset();
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+
+            if (submitButton) submitButton.disabled = true;
+            if (formStatus) formStatus.textContent = 'Sending message...';
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to send message.');
+                }
+
+                if (formStatus) formStatus.textContent = 'Thank you! Your message was sent successfully.';
+                form.reset();
+            } catch (error) {
+                if (formStatus) formStatus.textContent = error.message || 'Something went wrong. Please try again.';
+            } finally {
+                if (submitButton) submitButton.disabled = false;
+            }
         });
     }
 
