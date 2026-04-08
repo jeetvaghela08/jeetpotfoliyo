@@ -1,0 +1,12 @@
+{
+  "name": "jeetpotfoliyo",
+  "version": "1.0.0",
+  "description": "Portfolio website with contact form backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
